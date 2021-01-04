@@ -18,7 +18,7 @@ from network.outputdim import OUTPUT_DIM
 from losses.arcface_loss import ArcMarginLoss
 from graph import builGraph
 from torch.autograd import Variable
-from datasets.CartoonDataset import preclsDataset
+from datasets.CartoonDataset import generalclsDataset
 from train.adjustLR import _learning_rate_schedule
 from util.util import *
 
@@ -28,7 +28,7 @@ parser.add_argument('--batch_size',default=64,
                     help='destination where trained network should be saved')
 parser.add_argument('--data_dir',default='/home/shibaorong/cartoon/datasets/data/cartoon',
                     help='destination where trained network should be saved')
-parser.add_argument('--train_dir',default='/mnt/sdb/shibaorong/logs/cartoon/c/model_best.pyth',
+parser.add_argument('--train_dir',default='/mnt/sdb/shibaorong/logs/cartoon/cls/model_best.pyth',
                     help='destination where trained network should be saved')
 parser.add_argument('--autoaugment',default=True,
                     help='destination where trained network should be saved')
@@ -105,6 +105,7 @@ def test(*params):
     bar.finish()
 
 def trainclassification(*params):
+
     global step
     mymodel, epoch, optimizer, thisloss, mytrainloader, Arcloss=params
     global min_loss
@@ -193,7 +194,7 @@ def main():
     args=parser.parse_args()
     cuda_gpu = torch.cuda.is_available()
 
-    mytraindata = preclsDataset(args.data_dir)
+    mytraindata = generalclsDataset(args.data_dir)
     mytrainloader = DataLoaderX(mytraindata, batch_size=args.batch_size, shuffle=True, num_workers=0)
     mymodel = builGraph.getModel(args.backbone, args.classnum, args.gpu,
                                  'retrieval', cuda_gpu=cuda_gpu,pretrained=True)
