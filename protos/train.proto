@@ -1,0 +1,27 @@
+syntax="proto2";
+
+package bero.protos;
+
+message TrainConfig{
+    optional uint32 batch_size = 1 [default=64];
+
+    optional string fine_tune_checkpoint = 2;
+
+    optional uint32 max_epochs = 3 [default=10];
+
+    optional float initial_learning_rate = 4 [default=0.01];
+
+    // optimizer, now support: sgd, rms, adam, adagrad
+    optional string optimizer = 5 [default='gd'];
+
+    // directory saving train results
+    required string train_dir = 6;
+
+    optional bool load_model=7[default=true];
+
+    optional string data_dir=8;
+
+    repeated uint32 gpus = 9 ;
+
+    optional string valdata_dir=10;
+}

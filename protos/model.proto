@@ -1,0 +1,25 @@
+syntax="proto2";
+
+package bero.protos;
+
+message ModelConfig{
+    // base network
+  optional string backbone = 1 [default="inception_v3"];
+
+  // network input height
+  optional uint32 height = 2 [default=299];
+
+  // network input width
+  optional uint32 width = 3 [default=299];
+
+  // loss type, now only support softmax
+  optional string loss_type = 4 [default="softmax"];
+
+  // how many classes
+  required uint32 num_classes = 5;
+
+  //data augments
+  optional bool autoaugment=6[default=false];
+
+  optional string modeltype=7[default="classification"];
+}
