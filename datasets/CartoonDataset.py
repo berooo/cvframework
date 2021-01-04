@@ -10,6 +10,39 @@ import torch.utils.data
 from datasets.imageListDateset import ImagesFromList
 from util.autoaugment import ImageNetPolicy
 
+class generalclsDataset(torch.utils.data.Dataset):
+    def __init__(self,data_path, imsize = 224):
+
+        pairs=[]
+        for index, name in enumerate(os.listdir(data_path)):
+            imgroot = os.path.join(data_path, name)
+            for imgname in os.listdir(imgroot):
+                imgpath = os.path.join(imgroot, imgname)
+                pairs.append((index,imgpath))
+
+        self.innerdata=pairs
+        self.transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        ])
+        self.imsize = imsize
+
+    def __getitem__(self, index):
+        label, pimgf = self.innerdata[index]
+        policy = ImageNetPolicy()
+
+        pimg = Image.open(pimgf).convert('RGB')
+        pimg = policy(pimg)
+        pimg = pimg.resize((self.imsize, self.imsize))
+        pimg = np.array(pimg)
+        pimg = self.transform(pimg)
+
+        return pimg, label
+
+
+    def __len__(self):
+        return len(self.innerdata)
+
 class preclsDataset(torch.utils.data.Dataset):
     def __init__(self, data_path,imsize=224):
         label_dict={}
@@ -218,6 +251,7 @@ class CartoonDataset_tri(torch.utils.data.Dataset):
 
         random.shuffle(tripletlist)
         self.triplet_pool = tripletlist
+
 
     def __getitem__(self, index):
         (imgpath1, label1), (imgpath2, label2), (imgpath3, label3) = self.triplet_pool[index]
