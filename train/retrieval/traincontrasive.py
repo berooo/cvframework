@@ -78,7 +78,7 @@ def trainSiamese(mymodel,epoch,cuda_gpu,optimizer,mytrainloader,scheduer):
       n, c, h, w = img1.size()
       imgpair = torch.cat((img1, img2), axis=0)
       optimizer.zero_grad()
-      out, features = mymodel(imgpair)
+      out= mymodel(imgpair)
       out1, out2 = out.split(n, dim=0)
       tloss=buildLoss.ContrastiveLoss()
       loss=tloss(out1,out2,target)
