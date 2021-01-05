@@ -26,9 +26,9 @@ parser = argparse.ArgumentParser(description='PyTorch CNN Image Retrieval Traini
 
 parser.add_argument('--batch_size',default=64,
                     help='destination where trained network should be saved')
-parser.add_argument('--data_dir',default='/home/shibaorong/cartoon/datasets/data/cartoon',
+parser.add_argument('--data_dir',default='../../datasets/data/train',
                     help='destination where trained network should be saved')
-parser.add_argument('--train_dir',default='/mnt/sdb/shibaorong/logs/cartoon/cls/model_best.pyth',
+parser.add_argument('--train_dir',default='../../out/normalcls/model_best.pyth',
                     help='destination where trained network should be saved')
 parser.add_argument('--autoaugment',default=True,
                     help='destination where trained network should be saved')
@@ -45,8 +45,6 @@ parser.add_argument('--gpu',default=[0,1],
 parser.add_argument('--maxepoch',default=2000,
                     help='destination where trained network should be saved')
 
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 min_loss = float("inf")
 writer=SummaryWriter('DIGIX')
 step=0
