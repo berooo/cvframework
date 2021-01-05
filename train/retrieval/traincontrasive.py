@@ -61,9 +61,8 @@ def trainSiamese(mymodel,epoch,cuda_gpu,optimizer,mytrainloader,scheduer):
       iter_start_time = time.time()
       if cuda_gpu:
         img1 = img1.cuda()
-        label1=label1.cuda()
         img2 = img2.cuda()
-        label2=label2.cuda()
+        target=target.cuda()
 
       img1 = img1.float()
       img2 = img2.float()
