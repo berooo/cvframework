@@ -263,7 +263,7 @@ def getModel(modelName,num_classes,Gpu,modeltype,cuda_gpu=True,pretrained=True,b
         if balanced:
             mymodel=DataParallelModel(mymodel,device_ids=Gpu).cuda()
         else:
-            mymodel = torch.nn.DataParallel(mymodel, device_ids=[i for i in range(1,torch.cuda.device_count())]).cuda()
+            mymodel = torch.nn.DataParallel(mymodel, device_ids=[i for i in range(torch.cuda.device_count()-1)]).cuda()
     return mymodel
 
 if __name__=='__main__':

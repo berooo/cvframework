@@ -49,6 +49,8 @@ parser.add_argument('--jsonfile',default='/home/shibaorong/modelTorch/out/paris6
 parser.add_argument('--tofile',default='/home/shibaorong/modelTorch/out/paris',
                     help='destination where trained network should be saved')
 min_loss = float("inf")
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1,2,3,4,5,6,7"
 
 def trainSiamese(mymodel,epoch,cuda_gpu,optimizer,mytrainloader,scheduer):
     global min_loss
