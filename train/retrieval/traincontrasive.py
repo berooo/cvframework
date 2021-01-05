@@ -7,6 +7,9 @@
 """
 import os
 import sys
+
+from train.adjustLR import _learning_rate_schedule
+
 BASE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, BASE)
 print(BASE,flush=True)
@@ -134,21 +137,10 @@ def main():
         if 'scheduler' in checkpoint:
             scheduler = checkpoint['scheduler']
 
-
+    mytraindata = CartoonDataset(args.data_dir)
     for epoch in range(startepoch, args.maxepoch):
-        scheduler.step()
-        if epoch!=startepoch:
-            print('epoch eval {}'.format(epoch))
-            testargs = partest.parse_args()
-            pklword = args.train_dir.split('/')[-1]
-            newpkl = 'parameter_%02d.pkl' % (epoch)
-            path = args.train_dir.replace(pklword, newpkl)
-            print(path)
-            testargs.train_dir = path
-
-            testOnlinepair(testargs, cuda_gpu)
-            genPairs(args.jsonfile,args.tofile)
-        mytraindata =CartoonDataset(path=args.data_dir)
+        _learning_rate_schedule(optimizer, epoch, args.maxepoch, args.LR)
+        mytraindata.create_epoch()
         mytrainloader = torch.utils.data.DataLoader(mytraindata, batch_size=args.batch_size, shuffle=True)
         trainSiamese(mymodel,epoch,cuda_gpu,optimizer,mytrainloader,scheduler)
 
