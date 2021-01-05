@@ -99,7 +99,7 @@ def load_checkpoint(checkpoint_file, model, optimizer=None):
     model.load_state_dict(checkpoint['model_state_dict'])
     return checkpoint
 
-def generate_embedding_single(model,imgpaths,mode):
+def generate_embedding_single(model,imgpaths):
 
     num_embeddings=len(imgpaths)
     embeddings = np.empty((num_embeddings, NUM_EMBEDDING_DIMENSIONS))
@@ -108,7 +108,7 @@ def generate_embedding_single(model,imgpaths,mode):
         input_data = preprocess(image_path)
         if torch.cuda.is_available():
             input_data = input_data.cuda()
-        feature=model(input_data,mode)
+        feature=model(input_data)
 
         embeddings[i, :] = feature.cpu().detach().numpy()
         print(str(i) + ',' + str(len(imgpaths)))
@@ -138,8 +138,8 @@ def testmultinet(C,P):
     model = setup_model()
     imgpathc=[i[1] for i in C]
     imgpathp=[i[1] for i in P]
-    mf_q_embeddings,query_embeddings = generate_embedding(model, imgpathc, mode='c')
-    mf_g_embeddings,gallery_embeddings = generate_embedding(model, imgpathp, mode='p')
+    mf_q_embeddings,query_embeddings = generate_embedding_single(model, imgpathc)
+    mf_g_embeddings,gallery_embeddings = generate_embedding_single(model, imgpathp)
     savemat('cartoontest.mat', {'C': query_embeddings, 'P': gallery_embeddings})
     '''features = loadmat('cartoontest.mat')
     query_embeddings = features['C']
