@@ -16,16 +16,13 @@ from train.adjustLR import _learning_rate_schedule
 from datasets.CartoonDataset import CartoonDataset
 import argparse
 import time
-from parse.genpair import genPairs
 from input import *
 from graph import builGraph,buildLoss
 from torch.autograd import Variable
 from torch.optim import lr_scheduler
-from testt.testonlinepair import parser as partest
-from testt.testonlinepair import testOnlinepair
 parser = argparse.ArgumentParser(description='PyTorch CNN Image Retrieval Training')
 
-parser.add_argument('--batch_size',default=256,
+parser.add_argument('--batch_size',default=128,
                     help='destination where trained network should be saved')
 parser.add_argument('--data_dir',default='../../datasets/data/train',
                     help='destination where trained network should be saved')
