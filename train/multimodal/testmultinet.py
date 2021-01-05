@@ -138,21 +138,21 @@ def testmultinet(C,P):
     model = setup_model()
     imgpathc=[i[1] for i in C]
     imgpathp=[i[1] for i in P]
-    mf_q_embeddings,query_embeddings = generate_embedding_single(model, imgpathc)
-    mf_g_embeddings,gallery_embeddings = generate_embedding_single(model, imgpathp)
+    query_embeddings = generate_embedding_single(model, imgpathc)
+    gallery_embeddings = generate_embedding_single(model, imgpathp)
     savemat('cartoontest.mat', {'C': query_embeddings, 'P': gallery_embeddings})
     '''features = loadmat('cartoontest.mat')
     query_embeddings = features['C']
     gallery_embeddings = features['P']'''
-    '''scores = np.dot(gallery_embeddings, query_embeddings.T)
-    ranks = np.argsort(-scores, axis=0)'''
-    Q=query_embeddings
+    scores = np.dot(gallery_embeddings, query_embeddings.T)
+    ranks = np.argsort(-scores, axis=0)
+    '''Q=query_embeddings
     X=gallery_embeddings
     dis1 = np.zeros([X.shape[0], Q.shape[0]])
     for j in range(Q.shape[0]):
         d = (X - np.reshape(Q[j, :], (1, Q.shape[1]))) ** 2
         disj = np.sum(d, axis=1)
-        dis1[:, j] = disj
+        dis1[:, j] = disj'''
 
     '''Q = mf_q_embeddings
     X = mf_g_embeddings
@@ -162,8 +162,8 @@ def testmultinet(C,P):
         disj = np.sum(d, axis=1)
         dis2[:, j] = disj'''
 
-    dis=dis1
-    ranks = np.argsort(dis, axis=0)
+    '''dis=dis1
+    ranks = np.argsort(dis, axis=0)'''
     h,w=ranks.shape
     np.save("rankstrain.npy", ranks)
     count=0
