@@ -52,6 +52,7 @@ parser.add_argument('--tofile',default='/home/shibaorong/modelTorch/out/paris',
 min_loss = float("inf")
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "1,2,3,4,5,6,7"
+step=0
 
 def trainSiamese(mymodel,epoch,cuda_gpu,optimizer,mytrainloader,scheduer):
 
