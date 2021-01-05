@@ -61,7 +61,6 @@ def trainSiamese(mymodel,epoch,cuda_gpu,optimizer,mytrainloader,scheduer):
     batch_timer = AverageMeter()
     data_timer = AverageMeter()
     prec_losses = AverageMeter()
-    acc_avg = AverageMeter()
     print('epoch {}'.format(epoch + 1), flush=True)
     print(min_loss, flush=True)
     train_loss = 0.
@@ -69,7 +68,7 @@ def trainSiamese(mymodel,epoch,cuda_gpu,optimizer,mytrainloader,scheduer):
     bar = Bar('[{}]{}'.format('classification-DIGIX', 'train'), max=len(mytrainloader))
     since = time.time()
     for index, (img1,img2,label1,label2,target) in enumerate(mytrainloader):
-        train_acc = 0.
+
         data_timer.update(time.time() - since)
         if torch.cuda.is_available():
             img1 = img1.cuda()
@@ -94,7 +93,7 @@ def trainSiamese(mymodel,epoch,cuda_gpu,optimizer,mytrainloader,scheduer):
         since = time.time()
         prec_losses.update(loss, 1)
         log_msg = ('\n[epoch:{epoch}][iter:({batch}/{size})]' +
-                   '[lr:{lr}] loss: {loss:.4f}acc: {acc:.4f}   | eta: ' +
+                   '[lr:{lr}] loss: {loss:.4f}  | eta: ' +
                    '(data:{dt:.3f}s),(batch:{bt:.3f}s),(total:{tt:})') \
             .format(
             epoch=epoch + 1,
