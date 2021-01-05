@@ -5,7 +5,11 @@
 @contact: diamond_br@163.com
 @Created on: 2020/6/7 10:06
 """
-import time
+import os
+import sys
+BASE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, BASE)
+print(BASE,flush=True)
 
 from datasets.CartoonDataset import CartoonDataset
 import argparse
