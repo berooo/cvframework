@@ -10,7 +10,7 @@ import sys
 from tensorboardX import SummaryWriter
 BASE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, BASE)
-print(BASE)
+print(BASE,flush=True)
 import argparse
 from  progress.bar import Bar
 import time
@@ -57,7 +57,7 @@ def test(*params):
     data_timer = AverageMeter()
     prec_losses = AverageMeter()
     acc_avg = AverageMeter()
-    print(min_loss)
+    print(min_loss,flush=True)
 
 
     bar = Bar('[{}]{}'.format('classification-Holidays', 'train'), max=len(mytrainloader))
@@ -97,7 +97,7 @@ def test(*params):
             dt=data_timer.val,
             bt=batch_timer.val,
             tt=bar.elapsed_td)
-        print(log_msg)
+        print(log_msg,flush=True)
         index += 1
         bar.next()
     bar.finish()
@@ -111,8 +111,8 @@ def trainclassification(*params):
     data_timer = AverageMeter()
     prec_losses = AverageMeter()
     acc_avg=AverageMeter()
-    print('epoch {}'.format(epoch + 1))
-    print(min_loss)
+    print('epoch {}'.format(epoch + 1),flush=True)
+    print(min_loss,flush=True)
     train_loss=0.
 
     bar = Bar('[{}]{}'.format('classification-DIGIX', 'train'), max=len(mytrainloader))
@@ -161,7 +161,7 @@ def trainclassification(*params):
           dt=data_timer.val,
           bt=batch_timer.val,
           tt=bar.elapsed_td)
-      print(log_msg)
+      print(log_msg,flush=True)
       index+=1
       writer.flush()
       bar.next()
@@ -208,12 +208,12 @@ def main():
 
 
     if os.path.exists(args.train_dir):
-        print(args.train_dir)
+        print(args.train_dir,flush=True)
         checkpoint = torch.load(args.train_dir,map_location='cpu')
-        print(mymodel.named_parameters())
+        print(mymodel.named_parameters(),flush=True)
         mymodel.load_state_dict(checkpoint['model_state_dict'])
         Arcloss.load_state_dict(checkpoint['arcface_state_dict'])
-        print(mymodel.named_parameters())
+        print(mymodel.named_parameters(),flush=True)
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         startepoch = checkpoint['epoch']+1
         min_loss = checkpoint['loss']
