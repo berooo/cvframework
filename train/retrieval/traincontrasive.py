@@ -133,6 +133,7 @@ def main():
 
     global args
     global min_loss
+    global step
     args=parser.parse_args()
     cuda_gpu = torch.cuda.is_available()
 
@@ -145,13 +146,16 @@ def main():
     scheduler = lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.8)
     startepoch = 0
     if os.path.exists(args.train_dir):
-        checkpoint = torch.load(args.train_dir)
+        print(args.train_dir, flush=True)
+        checkpoint = torch.load(args.train_dir, map_location='cpu')
+        print(mymodel.named_parameters(), flush=True)
         mymodel.load_state_dict(checkpoint['model_state_dict'])
+        print(mymodel.named_parameters(), flush=True)
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-        startepoch = checkpoint['epoch']+1
+        startepoch = checkpoint['epoch'] + 1
         min_loss = checkpoint['loss']
-        if 'scheduler' in checkpoint:
-            scheduler = checkpoint['scheduler']
+        if 'step' in checkpoint:
+            step = checkpoint['step']
 
     mytraindata = CartoonDataset(args.data_dir)
     for epoch in range(startepoch, args.maxepoch):
