@@ -17,6 +17,7 @@ from datasets.CartoonDataset import CartoonDataset
 import argparse
 import time
 from input import *
+from  progress.bar import Bar
 from graph import builGraph,buildLoss
 from torch.autograd import Variable
 from torch.optim import lr_scheduler
@@ -53,61 +54,79 @@ os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "1,2,3,4,5,6,7"
 
 def trainSiamese(mymodel,epoch,cuda_gpu,optimizer,mytrainloader,scheduer):
+
+    global step
+    thisloss= buildLoss.ContrastiveLoss()
     global min_loss
-    print('epoch {}'.format(epoch + 1))
+    batch_timer = AverageMeter()
+    data_timer = AverageMeter()
+    prec_losses = AverageMeter()
+    acc_avg = AverageMeter()
+    print('epoch {}'.format(epoch + 1), flush=True)
+    print(min_loss, flush=True)
+    train_loss = 0.
 
-    trainloss=0.
-    record=0
+    bar = Bar('[{}]{}'.format('classification-DIGIX', 'train'), max=len(mytrainloader))
+    since = time.time()
     for index, (img1,img2,label1,label2,target) in enumerate(mytrainloader):
+        train_acc = 0.
+        data_timer.update(time.time() - since)
+        if torch.cuda.is_available():
+            img1 = img1.cuda()
+            img2 = img2.cuda()
+            target = target.cuda()
 
-      iter_start_time = time.time()
-      if cuda_gpu:
-        img1 = img1.cuda()
-        img2 = img2.cuda()
-        target=target.cuda()
+        img1 = img1.float()
+        img2 = img2.float()
 
-      img1 = img1.float()
-      img2 = img2.float()
+        img1, img2 = Variable(img1), Variable(img2)
 
-      img1, img2 = Variable(img1), Variable(img2)
+        optimizer.zero_grad()
+        n, c, h, w = img1.size()
+        imgpair = torch.cat((img1, img2), axis=0)
+        out = mymodel(imgpair)
+        out1, out2 = out.split(n, dim=0)
+        loss = thisloss(out1, out2, target)
+        loss.backward()
+        optimizer.step()
 
-      optimizer.zero_grad()
-      #out1,out2=mymodel(img1,img2)
-      n, c, h, w = img1.size()
-      imgpair = torch.cat((img1, img2), axis=0)
-      optimizer.zero_grad()
-      out= mymodel(imgpair)
-      out1, out2 = out.split(n, dim=0)
-      tloss=buildLoss.ContrastiveLoss()
-      loss=tloss(out1,out2,target)
+        batch_timer.update(time.time() - since)
+        since = time.time()
+        prec_losses.update(loss, 1)
+        log_msg = ('\n[epoch:{epoch}][iter:({batch}/{size})]' +
+                   '[lr:{lr}] loss: {loss:.4f}acc: {acc:.4f}   | eta: ' +
+                   '(data:{dt:.3f}s),(batch:{bt:.3f}s),(total:{tt:})') \
+            .format(
+            epoch=epoch + 1,
+            batch=index + 1,
+            size=len(mytrainloader),
+            lr=optimizer.param_groups[0]['lr'],
+            loss=prec_losses.avg,
+            dt=data_timer.val,
+            bt=batch_timer.val,
+            tt=bar.elapsed_td)
+        print(log_msg, flush=True)
+        index += 1
+        bar.next()
+        step += 1
+    bar.finish()
 
-      if loss.item()>0:
-        trainloss += loss.item()
-        record+=1
-      loss.backward()
-      optimizer.step()
-      t=time.time()-iter_start_time
-      if (index+1)%10==0:
-        if record!=0:
-          print('Train Loss: {:.6f}, Time:{:.3f}'.format(trainloss/record,t))
-
-    if record>0:
-      trainloss = trainloss / record
-
-    print('epoch Train Loss: {:.6f}'.format(trainloss))
     pklword = args.train_dir.split('/')[-1]
     newpkl = 'parameter_%02d.pkl' % (epoch + 1)
     path = args.train_dir.replace(pklword, newpkl)
 
-    is_best = trainloss < min_loss
+    is_best = prec_losses.avg < min_loss
     if is_best:
-        min_loss=trainloss
+        min_loss = prec_losses.avg
+
     save_checkpoint({'epoch': epoch,
                      'model_state_dict': mymodel.state_dict(),
                      'optimizer_state_dict': optimizer.state_dict(),
-                     'loss': trainloss,
-                     'scheduer':scheduer
+                     'loss': prec_losses.avg,
+                     'pmark': list(mymodel.named_parameters())[0][1][0][0][0][0],
+                     'step': step
                      }, is_best, path)
+
 
 
 def main():
