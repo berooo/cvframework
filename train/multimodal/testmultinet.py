@@ -31,8 +31,9 @@ from datasets.CartoonDataset import preclsDataset
 import numpy as np
 import torchvision.transforms as transforms
 
-imgdir='/home/shibaorong/cartoon/extraction/data/cartoontest'
-query_path='../../data/cartoon/query.txt'
+imgdir='../../datasets/data/test'
+query_path='../../datasets/data/gd/query.txt'
+gallery_path='../../datasets/data/gd/gallery.txt'
 NUM_EMBEDDING_DIMENSIONS=512
 transform = transforms.Compose([
         transforms.ToTensor(),
@@ -42,11 +43,9 @@ parser = argparse.ArgumentParser(description='PyTorch CNN Image Retrieval Traini
 
 parser.add_argument('--batch_size',default=1,
                     help='destination where trained network should be saved')
-parser.add_argument('--data_dir',default='/home/shibaorong/cartoon/datasets/data/cartoon',
+parser.add_argument('--data_dir',default='../../datasets/data/train',
                     help='destination where trained network should be saved')
-parser.add_argument('--valdata_dir',default='/home/shibaorong/cartoon/extraction/data/cartoontest',
-                    help='destination where trained network should be saved')
-parser.add_argument('--train_dir',default='/mnt/sdb/shibaorong/logs/cartoon/checkpoints/model_best.pyth',
+parser.add_argument('--train_dir',default='../../out/normalcls/parameter_180.pkl',
                     help='destination where trained network should be saved')
 parser.add_argument('--autoaugment',default=False,
                     help='destination where trained network should be saved')
@@ -73,12 +72,12 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 args = parser.parse_args()
 
 def setup_model():
-    '''model=builGraph.getModel('vgg16', 124, [0,1],
-                                 'retrieval', cuda_gpu=True,pretrained=True)'''
+    model=builGraph.getModel('vgg16', 124, [0,1],
+                                 'retrieval', cuda_gpu=True,pretrained=True)
     #model=multi_net(modelName=args.backbone)
-    model=MultinetExtraction(modelName=args.backbone)
-    if torch.cuda.is_available():
-        model = torch.nn.DataParallel(model, device_ids=[0,1]).cuda()
+    #model=MultinetExtraction(modelName=args.backbone)
+    '''if torch.cuda.is_available():
+        model = torch.nn.DataParallel(model, device_ids=[0,1]).cuda()'''
     load_checkpoint(args.train_dir,model)
     model.eval()
     return model
@@ -99,6 +98,22 @@ def load_checkpoint(checkpoint_file, model, optimizer=None):
     checkpoint = torch.load(checkpoint_file, map_location='cpu')
     model.load_state_dict(checkpoint['model_state_dict'])
     return checkpoint
+
+def generate_embedding_single(model,imgpaths,mode):
+
+    num_embeddings=len(imgpaths)
+    embeddings = np.empty((num_embeddings, NUM_EMBEDDING_DIMENSIONS))
+    for i, image_path in enumerate(imgpaths):
+
+        input_data = preprocess(image_path)
+        if torch.cuda.is_available():
+            input_data = input_data.cuda()
+        feature=model(input_data,mode)
+
+        embeddings[i, :] = feature.cpu().detach().numpy()
+        print(str(i) + ',' + str(len(imgpaths)))
+
+    return embeddings
 
 def generate_embedding(model,imgpaths,mode):
 
@@ -210,6 +225,18 @@ def main3():
     gallerys = [i[1] for i in C]
     querys = gallerys[:50]
     testbranchc(gallerys,querys,C)
+
+def main_main():
+    querys=get_img_name(query_path,imgdir)
+    gallerys=get_img_name(gallery_path,imgdir)
+    model=setup_model()
+    '''model=builGraph.getModel('vgg16', 124, [0,1],
+                                 'retrieval', cuda_gpu=True,pretrained=True)'''
+    query_embeddings=generate_embedding_single(model,querys)
+    gallery_embeddings=generate_embedding_single(model,gallerys)
+    scores = np.dot(gallery_embeddings, query_embeddings.T)
+    ranks = np.argsort(-scores, axis=0)
+    np.save("rankstrain.npy", ranks)
 
 if __name__=='__main__':
     main1()
