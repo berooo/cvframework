@@ -7,7 +7,7 @@
 """
 import time
 
-from datasets.siameseData import SiameseData
+from datasets.CartoonDataset import CartoonDataset
 import argparse
 import time
 from parse.genpair import genPairs
@@ -19,11 +19,11 @@ from testt.testonlinepair import parser as partest
 from testt.testonlinepair import testOnlinepair
 parser = argparse.ArgumentParser(description='PyTorch CNN Image Retrieval Training')
 
-parser.add_argument('--batch_size',default=64,
+parser.add_argument('--batch_size',default=256,
                     help='destination where trained network should be saved')
-parser.add_argument('--data_dir',default='/home/shibaorong/modelTorch/out/paristrainpair.json',
+parser.add_argument('--data_dir',default='../../datasets/data/train',
                     help='destination where trained network should be saved')
-parser.add_argument('--train_dir',default='/mnt/sdb/shibaorong/logs/paris/contrasive/parameter_001.pkl',
+parser.add_argument('--train_dir',default='../../out/contrasive/model_best.pyth',
                     help='destination where trained network should be saved')
 parser.add_argument('--autoaugment',default=True,
                     help='destination where trained network should be saved')
@@ -53,7 +53,8 @@ def trainSiamese(mymodel,epoch,cuda_gpu,optimizer,mytrainloader,scheduer):
 
     trainloss=0.
     record=0
-    for index, (img1,label1,img2,label2) in enumerate(mytrainloader):
+    for index, (img1,img2,label1,label2,target) in enumerate(mytrainloader):
+
       iter_start_time = time.time()
       if cuda_gpu:
         img1 = img1.cuda()
@@ -74,16 +75,7 @@ def trainSiamese(mymodel,epoch,cuda_gpu,optimizer,mytrainloader,scheduer):
       out, features = mymodel(imgpair)
       out1, out2 = out.split(n, dim=0)
       tloss=buildLoss.ContrastiveLoss()
-      target=np.zeros([len(label1),1])
-      for i in range(len(label1)):
-          if label1[i]==label2[i]:
-              target[i,:]=1
-          else:
-              target[i,:]=0
-      target=torch.from_numpy(target).cuda().float()
-      contrasiveloss=tloss(out1,out2,target)
-
-      loss=contrasiveloss
+      loss=tloss(out1,out2,target)
 
       if loss.item()>0:
         trainloss += loss.item()
@@ -95,11 +87,8 @@ def trainSiamese(mymodel,epoch,cuda_gpu,optimizer,mytrainloader,scheduer):
         if record!=0:
           print('Train Loss: {:.6f}, Time:{:.3f}'.format(trainloss/record,t))
 
-      torch.cuda.empty_cache()
-
     if record>0:
       trainloss = trainloss / record
-
 
     print('epoch Train Loss: {:.6f}'.format(trainloss))
     pklword = args.train_dir.split('/')[-1]
@@ -125,7 +114,7 @@ def main():
     cuda_gpu = torch.cuda.is_available()
 
     mymodel = builGraph.getModel(args.backbone, args.classnum, args.gpu,
-                                 'classification', cuda_gpu=cuda_gpu)
+                                 'retrieval', cuda_gpu=cuda_gpu)
     if args.optimizer == 'gd':
         optimizer = torch.optim.SGD(mymodel.parameters(), lr=args.LR)
     else:
@@ -155,7 +144,7 @@ def main():
 
             testOnlinepair(testargs, cuda_gpu)
             genPairs(args.jsonfile,args.tofile)
-        mytraindata =SiameseData(path=args.data_dir, autoaugment=args.autoaugment)
+        mytraindata =CartoonDataset(path=args.data_dir)
         mytrainloader = torch.utils.data.DataLoader(mytraindata, batch_size=args.batch_size, shuffle=True)
         trainSiamese(mymodel,epoch,cuda_gpu,optimizer,mytrainloader,scheduler)
 
