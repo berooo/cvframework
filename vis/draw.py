@@ -3,9 +3,8 @@ BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
 print(BASE,flush=True)
 import os.path as osp
-from evaluate.dataset import configdataset
 import numpy as np
-import pickle
+
 
 top_k = 30
 vis_root = 'yq01-sys-hic-k8s-v100-box-a225-0234.yq01.baidu.com:8904/cvframework/datasets/data/test'
