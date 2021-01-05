@@ -24,7 +24,7 @@ from util.util import *
 
 parser = argparse.ArgumentParser(description='PyTorch CNN Image Retrieval Training')
 
-parser.add_argument('--batch_size',default=64,
+parser.add_argument('--batch_size',default=256,
                     help='destination where trained network should be saved')
 parser.add_argument('--data_dir',default='../../datasets/data/train',
                     help='destination where trained network should be saved')
