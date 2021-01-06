@@ -26,7 +26,7 @@ def getresult(ranks,gallerys,querys):
     for i in range(w):
         qres=gallerys[ranks[0,i]]
         reslist.append(qres)
-
+    print(len(reslist))
     return reslist
 
 def write_to_csv(res,tofile):
