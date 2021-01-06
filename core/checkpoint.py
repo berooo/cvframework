@@ -50,10 +50,6 @@ def has_checkpoint():
 
 
 def load_checkpoint(checkpoint_file, model, optimizer=None):
-    """Loads the checkpoint from the given file."""
-    err_str = "Checkpoint '{}' not found"
-    assert os.path.exists(checkpoint_file), err_str.format(checkpoint_file)
-    # Load the checkpoint on CPU to avoid GPU mem spike
 
     startepoch=0
     min_loss=0
