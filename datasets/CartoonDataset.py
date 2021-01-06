@@ -8,7 +8,71 @@ import torchvision.transforms as transforms
 import torch.utils.data
 
 from datasets.imageListDateset import ImagesFromList
+from datasets.util import RandomErasing
 from util.autoaugment import ImageNetPolicy
+
+def traintransform(cfg):
+    transform=transforms.Compose([
+        transforms.Resize(cfg.INPUT.SIZE_INPUT),
+        transforms.RandomHorizontalFlip(p=cfg.INPUT.PROB),
+        transforms.Pad(cfg.INPUT.PADDING),
+        transforms.RandomCrop(cfg.INPUT.SIZE_CROP),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=cfg.INPUT.PIXEL_MEAN,std=cfg.INPUT.PIXEL_STD),
+        RandomErasing(probability=cfg.INPUT.RE_PROB, mean=cfg.INPUT.PIXEL_MEAN)
+    ])
+
+    return transform
+
+def testtransform(cfg):
+    transform = transforms.Compose([
+        transforms.Resize(cfg.INPUT.SIZE_TEST),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=cfg.INPUT.PIXEL_MEAN, std=cfg.INPUT.PIXEL_STD)
+    ])
+
+    return transform
+
+
+def process_traindir(data_path):
+
+    dataset=[]
+    for index, name in enumerate(os.listdir(data_path)):
+        imgroot = os.path.join(data_path, name)
+        for imgname in os.listdir(imgroot):
+            imgpath = os.path.join(imgroot, imgname)
+            if imgname[0] == 'C':
+                cp=0
+            else:
+                cp=1
+            dataset.append((imgpath,index,cp))
+    return dataset
+
+def train_collate_fn(batch):
+    """
+    # collate_fn这个函数的输入就是一个list，list的长度是一个batch size，list中的每个元素都是__getitem__得到的结果
+    """
+    imgs, label, cps,_ = zip(*batch)
+    label = torch.tensor(label, dtype=torch.int64)
+    cps = torch.tensor(cps, dtype=torch.int64)
+    return torch.stack(imgs, dim=0), label,cps
+
+class ImageDataset(torch.utils.data.Dataset):
+    def __init__(self, dataset, cfg,transform=None):
+        self.dataset = dataset
+        self.transform = traintransform(cfg)
+
+    def __len__(self):
+        return len(self.dataset)
+
+    def __getitem__(self, index):
+        imgpath,label,cp = self.dataset[index]
+        img =  Image.open(imgpath).convert('RGB')
+
+        if self.transform is not None:
+            img = self.transform(img)
+
+        return img, label, cp, imgpath.split('/')[-1]
 
 class generalclsDataset(torch.utils.data.Dataset):
     def __init__(self,data_path, imsize = 224):

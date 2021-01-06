@@ -236,7 +236,7 @@ def main_main():
     gallery_embeddings=generate_embedding_single(model,gallerys)
     scores = np.dot(gallery_embeddings, query_embeddings.T)
     ranks = np.argsort(-scores, axis=0)
-    np.save("rankstrain.npy", ranks)
+    np.save("ranks.npy", ranks)
 
 if __name__=='__main__':
     main1()

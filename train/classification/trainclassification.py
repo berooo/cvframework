@@ -46,9 +46,8 @@ parser.add_argument('--maxepoch',default=2000,
                     help='destination where trained network should be saved')
 
 min_loss = float("inf")
-writer=SummaryWriter('DIGIX')
 step=0
-
+writer=SummaryWriter('DIGIX')
 
 def test(*params):
     mymodel,mytrainloader = params
