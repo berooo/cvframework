@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 
-from network import inception, resnet,densenet,dshNet,vgg
+from network import inception, resnet,densenet,dshNet,vgg,resnet_ibn
 from network.landmark import GLEM
 from network.retrieval import delf
 
@@ -21,6 +21,8 @@ networks_map = {
     'GLEM':GLEM.Network,
     'dshNet':dshNet.dshNet,
     'delf':delf.Delf_V1,
-    'vgg16':vgg.vgg16
+    'vgg16':vgg.vgg16,
+    'resnet18_ibn_a':resnet_ibn.resnet18_ibn_a,
+    'resnet18_ibn_b':resnet_ibn.resnet18_ibn_b
 }
 
