@@ -63,11 +63,10 @@ def load_checkpoint(checkpoint_file, model, optimizer=None):
         min_loss = checkpoint['loss']
         step = checkpoint['step']
         print("load checkpoint successful!", flush=True)
+        if optimizer:
+            optimizer.load_state_dict(checkpoint["optimizer_state"])
+            print('optimizer load successfully.')
     else:
         print("load checkpoint unsuccessful!",flush=True)
-
-    if optimizer:
-        optimizer.load_state_dict(checkpoint["optimizer_state"])
-        print('optimizer load successfully.')
     #return checkpoint["epoch"]
     return startepoch,min_loss,step
