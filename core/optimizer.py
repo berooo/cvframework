@@ -14,7 +14,7 @@ print(BASE)
 
 import numpy as np
 import torch
-from config import cfg
+from config.defaults import _C as cfg
 
 
 def construct_optimizer(model):
