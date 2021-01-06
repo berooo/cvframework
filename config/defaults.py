@@ -42,6 +42,24 @@ _C.INPUT.DROPOUTPORB= 0.5
 _C.INPUT.DATAPATH='../../datasets/data/train'
 _C.INPUT.CKPTPATH= '../../out/normalcls/model_best.pyth'
 
+_C.BN = CN()
+
+# BN epsilon
+_C.BN.EPS = 1e-5
+
+# BN momentum (BN momentum in PyTorch = 1 - BN momentum in Caffe2)
+_C.BN.MOM = 0.1
+
+# Precise BN stats
+_C.BN.USE_PRECISE_STATS = False
+_C.BN.NUM_SAMPLES_PRECISE = 1024
+
+# Initialize the gamma of the final BN of each block to zero
+_C.BN.ZERO_INIT_FINAL_GAMMA = True
+
+# Use a different weight decay for BN layers
+_C.BN.USE_CUSTOM_WEIGHT_DECAY = False
+_C.BN.CUSTOM_WEIGHT_DECAY = 0.0
 
 _C.OPTIM = CN()
 
