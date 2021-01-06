@@ -11,7 +11,7 @@ import os
 import copy
 
 import torch
-from core import cfg
+from config.defaults import _C as cfg
 
 
 # Common prefix for checkpoint file names
