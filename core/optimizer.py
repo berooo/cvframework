@@ -9,7 +9,7 @@
 
 import numpy as np
 import torch
-from core.config import cfg
+from config import cfg
 
 
 def construct_optimizer(model):
