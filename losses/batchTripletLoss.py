@@ -53,4 +53,4 @@ class TripletLoss(nn.Module):
         # Compute ranking hinge loss
         y = torch.ones_like(dist_an)
         loss = self.ranking_loss(dist_an - dist_ap, y)
-        return [loss]
+        return loss
