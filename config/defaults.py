@@ -41,6 +41,9 @@ _C.INPUT.PADDING=10
 _C.INPUT.DROPOUTPORB= 0.5
 _C.INPUT.DATAPATH='../../datasets/data/train'
 _C.INPUT.CKPTPATH= '../../out/normalcls/model_best.pyth'
+_C.INPUT.PIXEL_MEAN = [0.485, 0.456, 0.406]
+# Values to be used for image normalization
+_C.INPUT.PIXEL_STD = [0.229, 0.224, 0.225]
 
 _C.BN = CN()
 
