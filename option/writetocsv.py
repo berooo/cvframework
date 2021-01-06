@@ -25,6 +25,7 @@ def getresult(ranks,gallerys,querys):
 
     for i in range(w):
         qres=gallerys[ranks[0,i]]
+        print(qres)
         reslist.append(qres)
     print(len(reslist))
     return reslist
