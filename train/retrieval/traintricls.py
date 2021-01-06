@@ -72,7 +72,7 @@ def traintricls(*params):
 
       optimizer.zero_grad()
 
-      feat,logits= mymodel(img,label)
+      feat,logits= mymodel(img)
 
       loss1=loss_func1(feat,(label,cps))
       loss2=loss_func2(logits,label)
