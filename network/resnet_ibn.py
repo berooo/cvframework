@@ -4,7 +4,7 @@ import warnings
 import torch
 import torch.nn as nn
 
-from .utils import IBN
+from .components.IBN import IBN
 
 
 __all__ = ['ResNet_IBN', 'resnet18_ibn_a', 'resnet34_ibn_a', 'resnet50_ibn_a', 'resnet101_ibn_a', 'resnet152_ibn_a',
