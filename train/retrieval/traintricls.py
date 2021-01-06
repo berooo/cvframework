@@ -48,15 +48,12 @@ def traintricls(*params):
     mymodel,epoch,optimizer,mytrainloader,loss_func1,loss_func2=params
     global min_loss
 
-    train_acc = 0.
-
     batch_timer = AverageMeter()
     data_timer = AverageMeter()
     prec_losses = AverageMeter()
     acc_avg=AverageMeter()
     print('epoch {}'.format(epoch + 1))
     print(min_loss)
-    train_loss=0.
 
     bar = Bar('[{}]{}'.format('CtoP---cartoon', 'train'), max=len(mytrainloader))
     since = time.time()
@@ -153,6 +150,6 @@ def main(cfg):
 if __name__=='__main__':
     config.load_cfg_fom_args("Train a tricls model.")
     cfg.freeze()
-
+    print(cfg,flush=True)
     main(cfg)
 

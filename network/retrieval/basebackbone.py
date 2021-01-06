@@ -19,10 +19,10 @@ class Base(nn.Module):
 
     def forward(self, x):
 
-        feat=self.baselayer(x)
+        x=self.baselayer(x)
 
-        x=self.pool(feat)
-        x=self.Flatten(x)
+        x=self.pool(x)
+        feat=self.Flatten(x)
         x=self.dropout(x)
         x=self.fc(x)
 
