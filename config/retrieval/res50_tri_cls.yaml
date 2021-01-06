@@ -17,7 +17,7 @@ INPUT:
   PADDING: 10
   DROPOUTPORB: 0.5
   DATAPATH: ../../datasets/data/train
-  CKPTPATH: ../../out/normalcls/model_best.pyth
+  CKPTPATH: ../../out/tricls/model_best.pyth
 
 BN:
   ZERO_INIT_FINAL_GAMMA: True
