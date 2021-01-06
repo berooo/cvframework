@@ -6,6 +6,11 @@
 # LICENSE file in the root directory of this source tree.
 
 """Optimizer."""
+import sys
+import os
+BASE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, BASE)
+print(BASE)
 
 import numpy as np
 import torch

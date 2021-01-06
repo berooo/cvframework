@@ -10,7 +10,6 @@ import copy
 import threading
 from torchvision import models
 import sys
-from tensorboardX import SummaryWriter
 BASE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, BASE)
 print(BASE)
