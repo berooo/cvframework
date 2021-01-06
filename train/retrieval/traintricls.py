@@ -37,7 +37,7 @@ min_loss = float("inf")
 step=0
 
 def setup_model(cfg):
-    model=BASE(cfg)
+    model=Base(cfg)
     print(model,flush=True)
     if torch.cuda.is_available():
         model = torch.nn.DataParallel(model, device_ids=[i for i in range(torch.cuda.device_count())]).cuda()
