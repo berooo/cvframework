@@ -32,10 +32,10 @@ def getresult(ranks,gallerys,querys):
     return reslist
 
 def write_to_csv(res,tofile):
-    for line in res:
-        with open(tofile,'a') as file:
-            writer=csv.writer(file)
-            writer.writerow([line])
+
+    with open(tofile,'w') as file:
+        writer=csv.writer(file)
+        writer.writerows(res)
 
 
 if __name__=='__main__':
