@@ -72,6 +72,19 @@ _C.OPTIM.MOMENTUM= 0.9
 _C.OPTIM.NESTEROV= True
 _C.OPTIM.WEIGHT_DECAY= 0.0001
 _C.OPTIM.WARMUP_EPOCHS= 5
+# Momentum dampening
+_C.OPTIM.DAMPENING = 0.0
+# Nesterov momentum
+_C.OPTIM.NESTEROV = True
+
+# L2 regularization
+_C.OPTIM.WEIGHT_DECAY = 0.0001
+
+# Start the warm up from OPTIM.BASE_LR * OPTIM.WARMUP_FACTOR
+_C.OPTIM.WARMUP_FACTOR = 0.1
+
+# Gradually warm up the OPTIM.BASE_LR over this number of epochs
+_C.OPTIM.WARMUP_EPOCHS = 5
 
 _C.TRAIN = CN()
 _C.TRAIN.DATASET=''
