@@ -34,7 +34,7 @@ parser.add_argument('--autoaugment',default=True,
                     help='destination where trained network should be saved')
 parser.add_argument('--backbone',default='vgg16',
                     help='destination where trained network should be saved')
-parser.add_argument('--classnum',default=124,
+parser.add_argument('--classnum',default=123,
                     help='destination where trained network should be saved')
 parser.add_argument('--optimizer',default='adam',
                     help='destination where trained network should be saved')
@@ -59,7 +59,7 @@ def test(*params):
     print(min_loss,flush=True)
 
 
-    bar = Bar('[{}]{}'.format('classification-Holidays', 'train'), max=len(mytrainloader))
+    bar = Bar('[{}]{}'.format('classification', 'train'), max=len(mytrainloader))
     since = time.time()
     for index, (batch_x, batch_y) in enumerate(mytrainloader):
         train_acc = 0.
