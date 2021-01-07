@@ -58,13 +58,13 @@ def load_checkpoint(checkpoint_file, model, optimizer=None):
     if os.path.exists(checkpoint_file):
         checkpoint = torch.load(checkpoint_file, map_location="cpu")
         model.load_state_dict(checkpoint['model_state_dict'])
-        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+
         startepoch = checkpoint['epoch'] + 1
         min_loss = checkpoint['loss']
         step = checkpoint['step']
         print("load checkpoint successful!", flush=True)
         if optimizer:
-            optimizer.load_state_dict(checkpoint["optimizer_state"])
+            optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
             print('optimizer load successfully.')
     else:
         print("load checkpoint unsuccessful!",flush=True)
