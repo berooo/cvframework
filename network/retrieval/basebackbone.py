@@ -22,7 +22,7 @@ class Base(nn.Module):
 
         x=self.pool(x)
         feat=self.Flatten(x)
-        x=self.fc(x)
+        x=self.fc(feat)
 
         return feat,x
 
