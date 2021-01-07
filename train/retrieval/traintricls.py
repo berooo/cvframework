@@ -74,7 +74,7 @@ def traintricls(*params):
       loss1=loss_func1(feat,(label,cps))
 
       loss2=loss_func2(logits,label)
-      print(loss1.item(),flush=True)
+      print(logits.size(),flush=True)
       print(loss2.item(),flush=True)
       loss=loss2
       loss.backward()
