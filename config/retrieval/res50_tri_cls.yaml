@@ -1,6 +1,6 @@
 MODEL:
   NAME: resnet50
-  NUM_CLASSES: 124
+  NUM_CLASSES: 123
   POOL: gem
   HEADS:
     IN_FEAT: 2048
