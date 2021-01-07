@@ -52,10 +52,10 @@ def train_collate_fn(batch):
     """
     # collate_fn这个函数的输入就是一个list，list的长度是一个batch size，list中的每个元素都是__getitem__得到的结果
     """
-    imgs, label, cps,_ = zip(*batch)
+    imgs, label, cps,name = zip(*batch)
     label = torch.tensor(label, dtype=torch.int64)
     cps = torch.tensor(cps, dtype=torch.int64)
-    return torch.stack(imgs, dim=0), label,cps
+    return torch.stack(imgs, dim=0), label,cps,name
 
 class ImageDataset(torch.utils.data.Dataset):
     def __init__(self, dataset, cfg,transform=None):
@@ -72,7 +72,7 @@ class ImageDataset(torch.utils.data.Dataset):
         if self.transform is not None:
             img = self.transform(img)
 
-        return img, label, cp, imgpath.split('/')[-1]
+        return img, label, cp, imgpath.split('/')[-2]
 
 class generalclsDataset(torch.utils.data.Dataset):
     def __init__(self,data_path, imsize = 224):
