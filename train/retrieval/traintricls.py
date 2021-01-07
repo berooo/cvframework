@@ -57,7 +57,7 @@ def traintricls(*params):
 
     bar = Bar('[{}]{}'.format('CtoP---cartoon', 'train'), max=len(mytrainloader))
     since = time.time()
-    for index, (img,label,cps) in enumerate(mytrainloader):
+    for index, (img,label,cps,_) in enumerate(mytrainloader):
       train_acc = 0.
       data_timer.update(time.time() - since)
       if torch.cuda.is_available():
