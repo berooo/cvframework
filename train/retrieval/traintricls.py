@@ -76,7 +76,7 @@ def traintricls(*params):
       loss2=loss_func2(logits,label)
       print(loss1.item(),flush=True)
       print(loss2.item(),flush=True)
-      loss=loss1+loss2
+      loss=loss2
       loss.backward()
       optimizer.step()
 
