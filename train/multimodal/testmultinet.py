@@ -32,27 +32,25 @@ import numpy as np
 import torchvision.transforms as transforms
 from network.retrieval.basebackbone import Base
 from config import cfg,config
-
+from datasets.CartoonDataset import testtransform
 imgdir='../../datasets/data/test'
 query_path='../../datasets/data/gd/query.txt'
 gallery_path='../../datasets/data/gd/gallery.txt'
-NUM_EMBEDDING_DIMENSIONS=512
+NUM_EMBEDDING_DIMENSIONS=2048
 
-
-transform = transforms.Compose([
-        transforms.Resize(cfg.INPUT.SIZE_TEST),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=cfg.INPUT.PIXEL_MEAN, std=cfg.INPUT.PIXEL_STD)
-    ])
 
 def setup_model(cfg):
     model=Base(cfg)
+    print(model, flush=True)
+    if torch.cuda.is_available():
+        model = torch.nn.DataParallel(model, device_ids=[i for i in range(torch.cuda.device_count())]).cuda()
     load_checkpoint(cfg.INPUT.CKPTPATH,model)
     model.eval()
     return model
 
 def preprocess(img):
     img=Image.open(img).convert('RGB')
+    transform=testtransform(cfg)
     img=transform(img)
     img=img.unsqueeze(0)
     return img
@@ -79,7 +77,7 @@ def generate_embedding_single(model,imgpaths):
             input_data = input_data.cuda()
         feature=model(input_data)
 
-        embeddings[i, :] = feature.cpu().detach().numpy()
+        embeddings[i, :] = feature[0].cpu().detach().numpy()
         print(str(i) + ',' + str(len(imgpaths)))
 
     return embeddings
