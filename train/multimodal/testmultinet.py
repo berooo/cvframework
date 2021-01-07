@@ -37,41 +37,13 @@ imgdir='../../datasets/data/test'
 query_path='../../datasets/data/gd/query.txt'
 gallery_path='../../datasets/data/gd/gallery.txt'
 NUM_EMBEDDING_DIMENSIONS=512
+
+
 transform = transforms.Compose([
+        transforms.Resize(cfg.INPUT.SIZE_TEST),
         transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        transforms.Normalize(mean=cfg.INPUT.PIXEL_MEAN, std=cfg.INPUT.PIXEL_STD)
     ])
-parser = argparse.ArgumentParser(description='PyTorch CNN Image Retrieval Training')
-
-parser.add_argument('--batch_size',default=1,
-                    help='destination where trained network should be saved')
-parser.add_argument('--data_dir',default='../../datasets/data/train',
-                    help='destination where trained network should be saved')
-parser.add_argument('--train_dir',default='../../out/normalcls/parameter_180.pkl',
-                    help='destination where trained network should be saved')
-parser.add_argument('--autoaugment',default=False,
-                    help='destination where trained network should be saved')
-parser.add_argument('--backbone',default='vgg16',
-                    help='destination where trained network should be saved')
-parser.add_argument('--classnum',default=124,
-                    help='destination where trained network should be saved')
-parser.add_argument('--optimizer',default='adam',
-                    help='destination where trained network should be saved')
-parser.add_argument('--LR',default=0.01,
-                    help='destination where trained network should be saved')
-parser.add_argument('--gpu',default=[0,1],
-                    help='destination where trained network should be saved')
-parser.add_argument('--maxepoch',default=2000,
-                    help='destination where trained network should be saved')
-
-parser.add_argument('--height',default=224,
-                    help='destination where trained network should be saved')
-parser.add_argument('--width',default=224,
-                    help='destination where trained network should be saved')
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
-
-args = parser.parse_args()
 
 def setup_model(cfg):
     model=Base(cfg)
