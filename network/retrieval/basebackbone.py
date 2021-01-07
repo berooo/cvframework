@@ -13,7 +13,6 @@ class Base(nn.Module):
         self.baselayer=nn.Sequential(*list(model.children())[:-2])
         self.norm = L2N()
         self.pool=getpool(cfg.MODEL.POOL)()
-        self.dropout = nn.Dropout(p=cfg.INPUT.DROPOUTPORB)
         self.fc = nn.Linear(OUTPUT_DIM[cfg.MODEL.NAME], cfg.MODEL.NUM_CLASSES, bias=True)
         self.Flatten = Flatten()
 
@@ -23,7 +22,6 @@ class Base(nn.Module):
 
         x=self.pool(x)
         feat=self.Flatten(x)
-        x=self.dropout(feat)
         x=self.fc(x)
 
         return feat,x
