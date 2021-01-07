@@ -52,7 +52,7 @@ def has_checkpoint():
 def load_checkpoint(checkpoint_file, model, optimizer=None):
 
     startepoch=0
-    min_loss=0
+    min_loss=float("inf")
     step=0
 
     if os.path.exists(checkpoint_file):

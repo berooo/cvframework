@@ -35,6 +35,7 @@ class RandomIdentitySampler(Sampler):
             self.length += num - num % self.num_instances
 
 
+
     def __iter__(self):
         batch_idxs_dict = defaultdict(list)
 

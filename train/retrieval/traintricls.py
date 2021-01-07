@@ -12,7 +12,7 @@ from torchvision import models
 import sys
 BASE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, BASE)
-print(BASE)
+print(BASE,flush=True)
 import argparse
 from torch.optim import lr_scheduler
 from  progress.bar import Bar
@@ -52,8 +52,8 @@ def traintricls(*params):
     data_timer = AverageMeter()
     prec_losses = AverageMeter()
     acc_avg=AverageMeter()
-    print('epoch {}'.format(epoch + 1))
-    print(min_loss)
+    print('epoch {}'.format(epoch + 1),flush=True)
+    print(min_loss,flush=True)
 
     bar = Bar('[{}]{}'.format('CtoP---cartoon', 'train'), max=len(mytrainloader))
     since = time.time()
@@ -72,14 +72,17 @@ def traintricls(*params):
       feat,logits= mymodel(img)
 
       loss1=loss_func1(feat,(label,cps))
+
       loss2=loss_func2(logits,label)
+      print(loss1.item())
+      print(loss2.item())
       loss=loss1+loss2
       loss.backward()
       optimizer.step()
 
       prediction = torch.argmax(logits, 1)
       train_acc += (prediction == label).sum().float()
-      acc = train_acc / len(img)
+      acc = train_acc / len(label)
 
 
 
@@ -100,7 +103,7 @@ def traintricls(*params):
           dt=data_timer.val,
           bt=batch_timer.val,
           tt=bar.elapsed_td)
-      print(log_msg)
+      print(log_msg,flush=True)
       index+=1
       bar.next()
       step+=1
