@@ -30,6 +30,8 @@ from datasets.imageListDateset import ImagesFromList
 from datasets.CartoonDataset import preclsDataset
 import numpy as np
 import torchvision.transforms as transforms
+from network.retrieval.basebackbone import Base
+from config import cfg,config
 
 imgdir='../../datasets/data/test'
 query_path='../../datasets/data/gd/query.txt'
@@ -71,14 +73,9 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
 args = parser.parse_args()
 
-def setup_model():
-    model=builGraph.getModel('vgg16', 124, [0,1],
-                                 'retrieval', cuda_gpu=True,pretrained=True)
-    #model=multi_net(modelName=args.backbone)
-    #model=MultinetExtraction(modelName=args.backbone)
-    '''if torch.cuda.is_available():
-        model = torch.nn.DataParallel(model, device_ids=[0,1]).cuda()'''
-    load_checkpoint(args.train_dir,model)
+def setup_model(cfg):
+    model=Base(cfg)
+    load_checkpoint(cfg.INPUT.CKPTPATH,model)
     model.eval()
     return model
 
@@ -226,12 +223,11 @@ def main3():
     querys = gallerys[:50]
     testbranchc(gallerys,querys,C)
 
-def main_main():
+def main_main(cfg):
     querys=get_img_name(query_path,imgdir)
     gallerys=get_img_name(gallery_path,imgdir)
-    model=setup_model()
-    '''model=builGraph.getModel('vgg16', 124, [0,1],
-                                 'retrieval', cuda_gpu=True,pretrained=True)'''
+    model=setup_model(cfg)
+
     query_embeddings=generate_embedding_single(model,querys)
     gallery_embeddings=generate_embedding_single(model,gallerys)
     scores = np.dot(gallery_embeddings, query_embeddings.T)
@@ -239,4 +235,7 @@ def main_main():
     np.save("ranks.npy", ranks)
 
 if __name__=='__main__':
-    main1()
+    config.load_cfg_fom_args("Train a tricls model.")
+    cfg.freeze()
+
+    main_main(cfg)
