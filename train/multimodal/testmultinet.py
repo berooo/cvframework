@@ -75,9 +75,9 @@ def generate_embedding_single(model,imgpaths):
         input_data = preprocess(image_path)
         if torch.cuda.is_available():
             input_data = input_data.cuda()
-        feature=model(input_data)
+        feature,logits=model(input_data)
 
-        embeddings[i, :] = feature[0].cpu().detach().numpy()
+        embeddings[i, :] = feature.cpu().detach().numpy()
         print(str(i) + ',' + str(len(imgpaths)))
 
     return embeddings
@@ -171,16 +171,6 @@ def testbranchc(gallerys,querys):
     scores = np.dot(gallery_embeddings, query_embeddings.T)
     ranks = np.argsort(-scores, axis=0)
     np.save("ranksbeanchc.npy", ranks)
-    '''count = 0
-    h, w = ranks.shape
-    for i in range(w):
-        qres = [C[ranks[j, i]] for j in range(10)]
-        a=[k[0] for k in qres].count(C[i][0])
-        if qres[0][0] == C[i][0]:
-            count += a
-        else:
-            print(i)
-    print('acc:{}'.format(float(count) / (10*w)))'''
 
 def main():
     gallerys = get_img_name(query_path, imgdir)
