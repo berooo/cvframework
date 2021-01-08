@@ -39,7 +39,7 @@ gallery_path='../../datasets/data/gd/gallery.txt'
 NUM_EMBEDDING_DIMENSIONS=2048
 
 
-def setup_model(cfg):
+def setup_model():
     model=Base(cfg)
     print(model, flush=True)
     if torch.cuda.is_available():
@@ -161,7 +161,7 @@ def get_query_and_gallery(data_path):
     return C,P
 
 def main1():
-    C,P=get_query_and_gallery(data_path=args.data_dir)
+    C,P=get_query_and_gallery(data_path=cfg.INPUT.DATAPATH)
     testmultinet(C,P)
 
 def testbranchc(gallerys,querys):
@@ -193,10 +193,10 @@ def main3():
     querys = gallerys[:50]
     testbranchc(gallerys,querys,C)
 
-def main_main(cfg):
+def main_main():
     querys=get_img_name(query_path,imgdir)
     gallerys=get_img_name(gallery_path,imgdir)
-    model=setup_model(cfg)
+    model=setup_model()
 
     query_embeddings=generate_embedding_single(model,querys)
     gallery_embeddings=generate_embedding_single(model,gallerys)
@@ -208,4 +208,4 @@ if __name__=='__main__':
     config.load_cfg_fom_args("Train a tricls model.")
     cfg.freeze()
 
-    main_main(cfg)
+    main_main()

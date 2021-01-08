@@ -35,7 +35,8 @@ def write_to_csv(res,tofile):
 
     with open(tofile,'w') as file:
         writer=csv.writer(file)
-        writer.writerows(res)
+        for i in res:
+          writer.writerow([i])
 
 
 if __name__=='__main__':
