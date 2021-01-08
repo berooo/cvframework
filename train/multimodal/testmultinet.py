@@ -200,4 +200,4 @@ if __name__=='__main__':
     config.load_cfg_fom_args("Train a tricls model.")
     cfg.freeze()
 
-    main_main()
+    main1()
