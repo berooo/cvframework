@@ -14,7 +14,7 @@ class Base(nn.Module):
         self.norm = L2N()
         self.pool=getpool(cfg.MODEL.POOL)()
         self.fc=nn.Linear(cfg.MODEL.HEADS.REDUCTION_DIM,cfg.MODEL.NUM_CLASSES,bias=True)
-
+        self.Flatten=Flatten()
 
     def forward(self, x):
 
