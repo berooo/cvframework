@@ -36,7 +36,6 @@ from core.checkpoint import load_checkpoint
 min_loss = float("inf")
 step=0
 
-
 def setup_model(cfg):
     model=Base(cfg)
     print(model,flush=True)
@@ -58,7 +57,7 @@ def traintricls(*params):
 
     bar = Bar('[{}]{}'.format('CtoP---cartoon', 'train'), max=len(mytrainloader))
     since = time.time()
-    for index, (img,label,cps,_) in enumerate(mytrainloader):
+    for index, (img,label,cps) in enumerate(mytrainloader):
       train_acc = 0.
       data_timer.update(time.time() - since)
       if torch.cuda.is_available():
@@ -75,10 +74,9 @@ def traintricls(*params):
       loss1=loss_func1(feat,(label,cps))
 
       loss2=loss_func2(logits,label)
-      print(loss1.item(), flush=True)
+      print(loss1.item(),flush=True)
       print(loss2.item(),flush=True)
-      
-      loss=loss2+loss1
+      loss=loss1+loss2
       loss.backward()
       optimizer.step()
 
@@ -105,9 +103,7 @@ def traintricls(*params):
           dt=data_timer.val,
           bt=batch_timer.val,
           tt=bar.elapsed_td)
-      
       print(log_msg,flush=True)
-      
       index+=1
       bar.next()
       step+=1

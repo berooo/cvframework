@@ -16,6 +16,8 @@ sys.path.insert(0, '../../')
 import os
 import random
 import sys
+import torch
+import torch.nn.functional as F
 from graph import builGraph
 from scipy.io import savemat,loadmat
 from PIL import Image
@@ -76,7 +78,7 @@ def generate_embedding_single(model,imgpaths):
         if torch.cuda.is_available():
             input_data = input_data.cuda()
         feature,logits=model(input_data)
-
+        feature=F.normalize(feature, p=2, dim=1)
         embeddings[i, :] = feature.cpu().detach().numpy()
         print(str(i) + ',' + str(len(imgpaths)))
 
