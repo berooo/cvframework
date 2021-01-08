@@ -13,9 +13,6 @@ class Base(nn.Module):
         self.baselayer=nn.Sequential(*list(model.children())[:-2])
         self.norm = L2N()
         self.pool=getpool(cfg.MODEL.POOL)()
-        self.whiten = nn.Linear(OUTPUT_DIM[cfg.MODEL.NAME], cfg.MODEL.HEADS.REDUCTION_DIM, bias=True)
-
-        self.Flatten = Flatten()
         self.fc=nn.Linear(cfg.MODEL.HEADS.REDUCTION_DIM,cfg.MODEL.NUM_CLASSES,bias=True)
 
 
@@ -24,9 +21,7 @@ class Base(nn.Module):
         x=self.baselayer(x)
 
         x=self.pool(x)
-        x=self.Flatten(x)
-        x=self.whiten(x)
-        feat=self.norm(x)
+        feat=self.Flatten(x)
         x=self.fc(feat)
 
         return feat,x
