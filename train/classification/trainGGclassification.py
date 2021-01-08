@@ -158,13 +158,3 @@ def main():
 
 if __name__=='__main__':
     main()
-    '''if epoch==startepoch or (epoch+1)%5==0:
-                print('epoch eval {}'.format(epoch))
-                testargs = partest.parse_args()
-                pklword = args.train_dir.split('/')[-1]
-                newpkl = 'parameter_%02d.pkl' % (epoch)
-                path = args.train_dir.replace(pklword, newpkl)
-                print(path)
-                testargs.train_dir = path
-                testargs.backbone=args.backbone
-                testOnlinepair(testargs, cuda_gpu)'''

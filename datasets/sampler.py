@@ -33,7 +33,9 @@ class RandomIdentitySampler(Sampler):
             if num < self.num_instances:
                 num = self.num_instances
             self.length += num - num % self.num_instances
-
+        print('-------------self.length--------------')
+        print(self.length)
+        print('-------------self.length--------------')
 
 
     def __iter__(self):
@@ -50,6 +52,11 @@ class RandomIdentitySampler(Sampler):
                 if len(batch_idxs) == self.num_instances:
                     batch_idxs_dict[pid].append(batch_idxs)
                     batch_idxs = []
+        count=0
+        for pid in self.pids:
+            count+=len(batch_idxs_dict[pid])*self.num_instances
+
+        print(count,flush=True)
 
         avai_pids = copy.deepcopy(self.pids)
         final_idxs = []
@@ -61,7 +68,9 @@ class RandomIdentitySampler(Sampler):
                 final_idxs.extend(batch_idxs)
                 if len(batch_idxs_dict[pid]) == 0:
                     avai_pids.remove(pid)
-
+        print('-------------final_idxs--------------')
+        print(len(final_idxs))
+        print('-------------final_idxs--------------')
         return iter(final_idxs)
 
     def __len__(self):
