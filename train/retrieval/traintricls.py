@@ -35,14 +35,13 @@ from core.checkpoint import load_checkpoint
 
 min_loss = float("inf")
 step=0
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "1,2,3,4,5,6,7"
+
 
 def setup_model(cfg):
     model=Base(cfg)
     print(model,flush=True)
     if torch.cuda.is_available():
-        model = torch.nn.DataParallel(model, device_ids=[i for i in range(7)]).cuda()
+        model = torch.nn.DataParallel(model, device_ids=[i for i in range(torch.cuda.device_count())]).cuda()
     return model
 
 def traintricls(*params):
