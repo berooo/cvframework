@@ -220,7 +220,7 @@ def main():
 
     mymodel = multi_net(modelName=args.backbone)
     print(mymodel,flush=True)
-    mymodel = torch.nn.DataParallel(mymodel, device_ids=[0]).cuda()
+    mymodel = torch.nn.DataParallel(mymodel, device_ids=[i for i in range(torch.cuda.device_count())]).cuda()
 
     '''if os.path.exists(args.log_dir):
         pc=torch.load(os.path.join(args.log_dir,'c','resnet50/model_best.pyth'),map_location='cpu')
