@@ -197,6 +197,7 @@ class CartoonDataset(torch.utils.data.Dataset):
     def __getitem__(self, index):
         imgpath1, imgpath2, label1,label2,target = self.pool[index]
         # label1, label2, label3 = self.labels[index]
+        print(imgpath1,flush=True)
         try:
             img1 = Image.open(imgpath1).convert('RGB')
             img2 = Image.open(imgpath2).convert('RGB')
