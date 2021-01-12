@@ -10,12 +10,13 @@ from network.multimodal.multinet import GlobalHead
 class MultinetExtraction(nn.Module):
     def __init__(self,modelName='resnet50'):
         super(MultinetExtraction,self).__init__()
-        self.branch_c = list(list(retrievalNet(modelName).children())[0].children())[0][:-1]
-        self.branch_p = list(list(retrievalNet(modelName).children())[0].children())[0][:-1]
-        self.shared = list(list(retrievalNet(modelName).children())[0].children())[0][-1]
-        self.head = GlobalHead(512, 512)
+        self.branch_c = nn.Sequential(*list(retrievalNet(modelName).children())[0][:-1])
+        self.branch_p = nn.Sequential(*list(retrievalNet(modelName).children())[0][:-1])
+        # self.branch_c = list(list(retrievalNet(modelName).children())[0].children())[0][:-1]
+        # self.branch_p = list(list(retrievalNet(modelName).children())[0].children())[0][:-1]
+        self.shared = nn.Sequential(*list(retrievalNet(modelName).children())[0][-1])
+        self.head = GlobalHead(2048, 2048)
         self.norm = L2N()
-
 
 
     def forward(self,x,mode):
@@ -25,9 +26,9 @@ class MultinetExtraction(nn.Module):
         elif mode=='p':
             median_feature = self.branch_p(x)
 
-        mfeature=mc=self.norm(median_feature.view(median_feature.size(0),-1))
+        #mfeature=self.norm(median_feature.view(median_feature.size(0),-1))
 
-        global_feature = self.norm(self.head(self.shared(median_feature)))
+        global_feature = self.head(self.shared(median_feature))
 
-        return mfeature,global_feature
+        return global_feature
 

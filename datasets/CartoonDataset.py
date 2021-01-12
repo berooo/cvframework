@@ -85,10 +85,7 @@ class generalclsDataset(torch.utils.data.Dataset):
                 pairs.append((index,imgpath))
 
         self.innerdata=pairs
-        self.transform = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-        ])
+        self.transform = traintransform()
         self.imsize = imsize
 
     def __getitem__(self, index):
@@ -153,7 +150,7 @@ class preclsDataset(torch.utils.data.Dataset):
         return len(self.innerdata)
 
 class CartoonDataset(torch.utils.data.Dataset):
-    def __init__(self, data_path,imsize=224):
+    def __init__(self, data_path,cfg):
 
         C = []
         P = []
@@ -169,11 +166,8 @@ class CartoonDataset(torch.utils.data.Dataset):
 
         self.c = C
         self.p = P
-        self.transform = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-        ])
-        self.imsize=imsize
+        self.transform = traintransform(cfg)
+
         self.num_epoch=2000
 
     def create_epoch(self):
@@ -209,11 +203,6 @@ class CartoonDataset(torch.utils.data.Dataset):
 
         except:
             return self.__getitem__(index + 1)
-
-        policy = ImageNetPolicy()
-
-        img1 = policy(img1)
-        img2 = policy(img2)
 
         img1 = self.transform(img1)
         img2 = self.transform(img2)
@@ -327,11 +316,6 @@ class CartoonDataset_tri(torch.utils.data.Dataset):
         except:
             return self.__getitem__(index + 1)
 
-        policy = ImageNetPolicy()
-
-        img1 = policy(img1)
-        img2 = policy(img2)
-        img3 = policy(img3)
 
         img1 = self.transform(img1)
         img2 = self.transform(img2)

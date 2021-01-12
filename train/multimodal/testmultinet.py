@@ -40,19 +40,24 @@ query_path='../../datasets/data/gd/query.txt'
 gallery_path='../../datasets/data/gd/gallery.txt'
 NUM_EMBEDDING_DIMENSIONS=2048
 
+path='/mnt/sdb/shibaorong/logs/cartoon/checkpoints/model_best.pyth'
 
 def setup_model():
-    model=Base(cfg)
+    #model=Base(cfg)
+    model=MultinetExtraction()
     print(model, flush=True)
     if torch.cuda.is_available():
         model = torch.nn.DataParallel(model, device_ids=[i for i in range(torch.cuda.device_count())]).cuda()
-    load_checkpoint(cfg.INPUT.CKPTPATH,model)
+    load_checkpoint(path,model)
     model.eval()
     return model
 
 def preprocess(img):
     img=Image.open(img).convert('RGB')
-    transform=testtransform(cfg)
+    transform=transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        ])
     img=transform(img)
     img=img.unsqueeze(0)
     return img
@@ -94,21 +99,20 @@ def generate_embedding(model,imgpaths,mode):
         input_data = preprocess(image_path)
         if torch.cuda.is_available():
             input_data = input_data.cuda()
-
-        mf,feature=model(input_data,mode)
-        mf_embeddings.append(mf.cpu().detach().numpy().reshape(-1))
+        feature=model(input_data,mode)
+        feature = F.normalize(feature, p=2, dim=1)
         embeddings[i, :] = feature.cpu().detach().numpy()
         print(str(i) + ',' + str(len(imgpaths)))
-    mf_embeddings=np.asarray(mf_embeddings)
-    return mf_embeddings,embeddings
+
+    return embeddings
 
 def testmultinet(C,P):
 
     model = setup_model()
     imgpathc=[i[1] for i in C]
     imgpathp=[i[1] for i in P]
-    query_embeddings = generate_embedding_single(model, imgpathc)
-    gallery_embeddings = generate_embedding_single(model, imgpathp)
+    query_embeddings = generate_embedding(model, imgpathc,'c')
+    gallery_embeddings = generate_embedding(model, imgpathp,'p')
     savemat('cartoontest.mat', {'C': query_embeddings, 'P': gallery_embeddings})
     '''features = loadmat('cartoontest.mat')
     query_embeddings = features['C']
@@ -190,8 +194,8 @@ def main_main():
     gallerys=get_img_name(gallery_path,imgdir)
     model=setup_model()
 
-    query_embeddings=generate_embedding_single(model,querys)
-    gallery_embeddings=generate_embedding_single(model,gallerys)
+    query_embeddings=generate_embedding(model,querys,'c')
+    gallery_embeddings=generate_embedding(model,gallerys,'p')
     scores = np.dot(gallery_embeddings, query_embeddings.T)
     ranks = np.argsort(-scores, axis=0)
     np.save("ranks.npy", ranks)
@@ -200,4 +204,4 @@ if __name__=='__main__':
     config.load_cfg_fom_args("Train a tricls model.")
     cfg.freeze()
 
-    main_main()
+    main1()

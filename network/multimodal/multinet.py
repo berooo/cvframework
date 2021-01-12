@@ -65,22 +65,19 @@ class multi_net(nn.Module):
     def __init__(self,modelName='resnet50'):
         super(multi_net, self).__init__()
 
-        #self.branch_c = nn.Sequential(*list(retrievalNet(modelName).children())[0][:-1])
-        #self.branch_p=nn.Sequential(*list(retrievalNet(modelName).children())[0][:-1])
-        self.branch_c = list(list(retrievalNet(modelName).children())[0].children())[0][:-1]
-        self.branch_p = list(list(retrievalNet(modelName).children())[0].children())[0][:-1]
-        self.shared=list(list(retrievalNet(modelName).children())[0].children())[0][-1]
-        self.head=GlobalHead(512,512)
+        self.branch_c = nn.Sequential(*list(retrievalNet(modelName).children())[0][:-1])
+        self.branch_p=nn.Sequential(*list(retrievalNet(modelName).children())[0][:-1])
+        #self.branch_c = list(list(retrievalNet(modelName).children())[0].children())[0][:-1]
+        #self.branch_p = list(list(retrievalNet(modelName).children())[0].children())[0][:-1]
+        self.shared=nn.Sequential(*list(retrievalNet(modelName).children())[0][-1])
+        self.head=GlobalHead(2048,2048)
         self.norm = L2N()
 
     def forward(self, cx,px):
         median_feature_c = self.branch_c(cx)
         median_feature_p=self.branch_p(px)
 
-        mc=self.norm(median_feature_c.view(median_feature_c.size(0),-1))
+        global_feature_c=self.head(self.shared(median_feature_c))
+        global_feature_p=self.head(self.shared(median_feature_p))
 
-        mp=self.norm(median_feature_c.view(median_feature_c.size(0),-1))
-        global_feature_c=self.norm(self.head(self.shared(median_feature_c)))
-        global_feature_p=self.norm(self.head(self.shared(median_feature_p)))
-
-        return mc,mp,global_feature_c,global_feature_p
+        return global_feature_c,global_feature_p

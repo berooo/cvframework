@@ -19,6 +19,7 @@ from torch.optim import lr_scheduler
 from  progress.bar import Bar
 from input import *
 import time
+from config import cfg,config
 from losses.arcface_loss import ArcMarginLoss
 from prefetch_generator import BackgroundGenerator
 from graph import builGraph,buildLoss
@@ -41,9 +42,9 @@ parser.add_argument('--finetune_dir',default='/mnt/sdb/shibaorong/logs/cartoon/c
                     help='destination where trained network should be saved')
 parser.add_argument('--autoaugment',default=True,
                     help='destination where trained network should be saved')
-parser.add_argument('--backbone',default='vgg16',
+parser.add_argument('--backbone',default='resnet50',
                     help='destination where trained network should be saved')
-parser.add_argument('--classnum',default=124,
+parser.add_argument('--classnum',default=123,
                     help='destination where trained network should be saved')
 parser.add_argument('--optimizer',default='adam',
                     help='destination where trained network should be saved')
@@ -68,7 +69,7 @@ def test(*params):
     data_timer = AverageMeter()
     prec_losses = AverageMeter()
     acc_avg = AverageMeter()
-    print(min_loss)
+    print(min_loss,flush=True)
 
     bar = Bar('[{}]{}'.format('classification-Holidays', 'train'), max=len(mytrainloader))
     since = time.time()
@@ -107,7 +108,7 @@ def test(*params):
             dt=data_timer.val,
             bt=batch_timer.val,
             tt=bar.elapsed_td)
-        print(log_msg)
+        print(log_msg,flush=True)
         index += 1
         bar.next()
     bar.finish()
@@ -120,8 +121,8 @@ def trainmultimodal(*params):
     data_timer = AverageMeter()
     prec_losses = AverageMeter()
     acc_avg=AverageMeter()
-    print('epoch {}'.format(epoch + 1))
-    print(min_loss)
+    print('epoch {}'.format(epoch + 1),flush=True)
+    print(min_loss,flush=True)
     train_loss=0.
 
     bar = Bar('[{}]{}'.format('CtoP---cartoon', 'train'), max=len(mytrainloader))
@@ -143,38 +144,38 @@ def trainmultimodal(*params):
 
       optimizer.zero_grad()
 
-      mc,mp,fc,fp= mymodel(img1,img2)
+      fc,fp= mymodel(img1,img2)
 
-      loss_contra_1 = loss_contrasive(mc,mp,target)
+
       loss_contra_2 = loss_contrasive(fc, fp, target)
-      '''out1 = Arcloss(f1, label1)
+      out1 = Arcloss(fc, label1)
       loss1 = loss_crossentro(out1, label1)
 
-      out2=Arcloss(f2,label2)
-      loss2 = loss_crossentro(out2, label2)'''
+      out2=Arcloss(fp,label2)
+      loss2 = loss_crossentro(out2, label2)
 
       #loss,prediction=mymodel(batch_x,batch_y,thisloss)
-      loss=loss_contra_1+loss_contra_2
+      loss=loss1+loss2+loss_contra_2
       loss=loss.mean()
 
       writer.add_scalar('Train/Loss', loss, step)
       loss.backward()
       optimizer.step()
 
-      '''prediction1 = torch.argmax(out1, 1)
+      prediction1 = torch.argmax(out1, 1)
       train_acc += (prediction1 == label1).sum().float()
       prediction2 = torch.argmax(out2, 1)
       train_acc += (prediction2 == label2).sum().float()
       acc = train_acc / (2*len(img1))
 
-      writer.add_scalar('Train/Acc', acc, step)'''
+      writer.add_scalar('Train/Acc', acc, step)
       batch_timer.update(time.time() - since)
       since = time.time()
       prec_losses.update(loss, 1)
-      #acc_avg.update(acc,1)
+      acc_avg.update(acc,1)
       writer.add_scalar('Train/LR', optimizer.param_groups[0]['lr'], step)
       log_msg = ('\n[epoch:{epoch}][iter:({batch}/{size})]' +
-                 '[lr:{lr}] loss: {loss:.4f} | eta: ' +
+                 '[lr:{lr}] loss: {loss:.4f} acc: {acc:.4f} | eta: ' +
                  '(data:{dt:.3f}s),(batch:{bt:.3f}s),(total:{tt:})') \
           .format(
           epoch=epoch + 1,
@@ -182,10 +183,11 @@ def trainmultimodal(*params):
           size=len(mytrainloader),
           lr=optimizer.param_groups[0]['lr'],
           loss=prec_losses.avg,
+          acc=acc_avg.avg,
           dt=data_timer.val,
           bt=batch_timer.val,
           tt=bar.elapsed_td)
-      print(log_msg)
+      print(log_msg,flush=True)
       index+=1
       writer.flush()
       bar.next()
@@ -204,28 +206,29 @@ def trainmultimodal(*params):
                        'arcface_state_dict':Arcloss.state_dict(),
                        'optimizer_state_dict': optimizer.state_dict(),
                        'loss': prec_losses.avg,
-                        'pmark':list(mymodel.named_parameters())[0][1][0][0][0][0],
                        'step':step
                        }, is_best, path)
 
 def main():
-
+    config.load_cfg_fom_args("Train a tricls model.")
+    cfg.freeze()
     global args
     global min_loss
     global step
     args=parser.parse_args()
-    mytraindata = CartoonDataset(args.data_dir)
+    mytraindata = CartoonDataset(args.data_dir,cfg)
 
     mymodel = multi_net(modelName=args.backbone)
-    mymodel = torch.nn.DataParallel(mymodel, device_ids=[0,1]).cuda()
+    print(mymodel,flush=True)
+    mymodel = torch.nn.DataParallel(mymodel, device_ids=[0]).cuda()
 
-    if os.path.exists(args.log_dir):
-        pc=torch.load(os.path.join(args.log_dir,'c','model_best.pyth'),map_location='cpu')
+    '''if os.path.exists(args.log_dir):
+        pc=torch.load(os.path.join(args.log_dir,'c','resnet50/model_best.pyth'),map_location='cpu')
         pc_state={ k.replace('module._baselayer.0.','') : v for index,(k, v) in enumerate(pc['model_state_dict'].items()) if index<26}
         mymodel.module.branch_c.load_state_dict(pc_state)
-        pp=torch.load(os.path.join(args.log_dir,'p','model_best.pyth'),map_location='cpu')
+        pp=torch.load(os.path.join(args.log_dir,'p','resnet50/model_best.pyth'),map_location='cpu')
         pp_state = {k.replace('module._baselayer.0.', ''): v for index,(k, v) in enumerate(pp['model_state_dict'].items()) if index<26}
-        mymodel.module.branch_p.load_state_dict(pp_state)
+        mymodel.module.branch_p.load_state_dict(pp_state)'''
 
     if args.optimizer == 'gd':
         optimizer = torch.optim.SGD(mymodel.parameters(), lr=args.LR)
