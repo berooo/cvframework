@@ -116,7 +116,7 @@ def load_cfg_fom_args(description="Config file options."):
     """Load config from command line arguments and set any specified options."""
     parser = argparse.ArgumentParser(description=description)
     help_s = "Config file location"
-    parser.add_argument("--cfg",dest="cfg_file",default='../,,/config/retrieval/res50_tri_cls.yaml', help=help_s)
+    parser.add_argument("--cfg",dest="cfg_file",default='../../config/retrieval/res50_tri_cls.yaml', help=help_s)
     help_s = "See pycls/core/config.py for all options"
     parser.add_argument("opts", help=help_s, default=None, nargs=argparse.REMAINDER)
     args = parser.parse_args()
