@@ -34,7 +34,7 @@ parser = argparse.ArgumentParser(description='PyTorch CNN Image Retrieval Traini
 
 parser.add_argument('--batch_size',default=64,
                     help='destination where trained network should be saved')
-parser.add_argument('--data_dir',default='../../datasets/data',
+parser.add_argument('--data_dir',default='../../datasets/data/train',
                     help='destination where trained network should be saved')
 parser.add_argument('--log_dir',default='../../out/cartoon/',
                     help='destination where trained network should be saved')
