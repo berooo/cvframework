@@ -21,6 +21,7 @@ from torch.autograd import Variable
 from datasets.CartoonDataset import generalclsDataset
 from train.adjustLR import _learning_rate_schedule
 from util.util import *
+from config import cfg,config
 
 parser = argparse.ArgumentParser(description='PyTorch CNN Image Retrieval Training')
 
@@ -32,7 +33,7 @@ parser.add_argument('--train_dir',default='../../out/normalcls/model_best.pyth',
                     help='destination where trained network should be saved')
 parser.add_argument('--autoaugment',default=True,
                     help='destination where trained network should be saved')
-parser.add_argument('--backbone',default='vgg16',
+parser.add_argument('--backbone',default='resnet50',
                     help='destination where trained network should be saved')
 parser.add_argument('--classnum',default=123,
                     help='destination where trained network should be saved')
@@ -185,13 +186,15 @@ def trainclassification(*params):
                        }, is_best, path)
 
 def main():
+    config.load_cfg_fom_args("Train a cls model.")
+    cfg.freeze()
     global args
     global min_loss
     global step
     args=parser.parse_args()
     cuda_gpu = torch.cuda.is_available()
 
-    mytraindata = generalclsDataset(args.data_dir)
+    mytraindata = generalclsDataset(args.data_dir,cfg)
     mytrainloader = DataLoaderX(mytraindata, batch_size=args.batch_size, shuffle=True, num_workers=0)
     mymodel = builGraph.getModel(args.backbone, args.classnum, args.gpu,
                                  'retrieval', cuda_gpu=cuda_gpu,pretrained=True)

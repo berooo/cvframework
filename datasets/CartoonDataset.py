@@ -75,7 +75,7 @@ class ImageDataset(torch.utils.data.Dataset):
         return img, label, cp, imgpath.split('/')[-2]
 
 class generalclsDataset(torch.utils.data.Dataset):
-    def __init__(self,data_path, imsize = 224):
+    def __init__(self,data_path, cfg,imsize = 224):
 
         pairs=[]
         for index, name in enumerate(os.listdir(data_path)):
@@ -85,7 +85,7 @@ class generalclsDataset(torch.utils.data.Dataset):
                 pairs.append((index,imgpath))
 
         self.innerdata=pairs
-        self.transform = traintransform()
+        self.transform = traintransform(cfg)
         self.imsize = imsize
 
     def __getitem__(self, index):
@@ -94,8 +94,6 @@ class generalclsDataset(torch.utils.data.Dataset):
 
         pimg = Image.open(pimgf).convert('RGB')
         pimg = policy(pimg)
-        pimg = pimg.resize((self.imsize, self.imsize))
-        pimg = np.array(pimg)
         pimg = self.transform(pimg)
 
         return pimg, label
