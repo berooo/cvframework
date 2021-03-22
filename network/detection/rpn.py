@@ -184,7 +184,7 @@ class AnchorGenerator(nn.Module):
 
 class RPNHead(nn.Module):
     """
-    Adds a simple RPN Head with classification and regression heads
+    Adds a simple RPN Head with base and regression heads
 
     Arguments:
         in_channels (int): number of channels of the input feature

@@ -173,7 +173,7 @@ def testmodel(args,cuda_gpu,type='multitrain',similartype='dot'):
 
         for index,ranks in enumerate(rrank):
             if index==0:
-                print('classification................')
+                print('base................')
             elif index==1:
                 print('extractor.....................')
             else:

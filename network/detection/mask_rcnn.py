@@ -33,7 +33,7 @@ class MaskRCNN(FasterRCNN):
         - labels (Int64Tensor[N]): the class label for each ground-truth box
         - masks (UInt8Tensor[N, H, W]): the segmentation binary masks for each instance
 
-    The model returns a Dict[Tensor] during training, containing the classification and regression
+    The model returns a Dict[Tensor] during training, containing the base and regression
     losses for both the RPN and the R-CNN, and the mask loss.
 
     During inference, the model requires only the input tensors, and returns the post-processed
@@ -81,19 +81,19 @@ class MaskRCNN(FasterRCNN):
             the locations indicated by the bounding boxes
         box_head (nn.Module): module that takes the cropped feature maps as input
         box_predictor (nn.Module): module that takes the output of box_head and returns the
-            classification logits and box regression deltas.
-        box_score_thresh (float): during inference, only return proposals with a classification score
+            base logits and box regression deltas.
+        box_score_thresh (float): during inference, only return proposals with a base score
             greater than box_score_thresh
         box_nms_thresh (float): NMS threshold for the prediction head. Used during inference
         box_detections_per_img (int): maximum number of detections per image, for all classes.
         box_fg_iou_thresh (float): minimum IoU between the proposals and the GT box so that they can be
-            considered as positive during training of the classification head
+            considered as positive during training of the base head
         box_bg_iou_thresh (float): maximum IoU between the proposals and the GT box so that they can be
-            considered as negative during training of the classification head
+            considered as negative during training of the base head
         box_batch_size_per_image (int): number of proposals that are sampled during training of the
-            classification head
+            base head
         box_positive_fraction (float): proportion of positive proposals in a mini-batch during training
-            of the classification head
+            of the base head
         bbox_reg_weights (Tuple[float, float, float, float]): weights for the encoding/decoding of the
             bounding boxes
         mask_roi_pool (MultiScaleRoIAlign): the module which crops and resizes the feature maps in
@@ -109,7 +109,7 @@ class MaskRCNN(FasterRCNN):
         >>> from torchvision.models.detection import MaskRCNN
         >>> from torchvision.models.detection.rpn import AnchorGenerator
         >>>
-        >>> # load a pre-trained model for classification and return
+        >>> # load a pre-trained model for base and return
         >>> # only the features
         >>> backbone = torchvision.models.mobilenet_v2(pretrained=True).features
         >>> # MaskRCNN needs to know the number of
@@ -281,7 +281,7 @@ def maskrcnn_resnet50_fpn(pretrained=False, progress=True,
         - labels (``Int64Tensor[N]``): the class label for each ground-truth box
         - masks (``UInt8Tensor[N, H, W]``): the segmentation binary masks for each instance
 
-    The model returns a ``Dict[Tensor]`` during training, containing the classification and regression
+    The model returns a ``Dict[Tensor]`` during training, containing the base and regression
     losses for both the RPN and the R-CNN, and the mask loss.
 
     During inference, the model requires only the input tensors, and returns the post-processed

@@ -26,7 +26,7 @@ _C.MODEL.HEADS.REDUCTION_DIM = 512
 _C.MODEL.HEADS.POOL_LAYER = "avgpool"
 # Classification layer type
 _C.MODEL.HEADS.CLS_LAYER = "linear"
-# Margin and Scale for margin-based classification layer
+# Margin and Scale for margin-based base layer
 _C.MODEL.HEADS.MARGIN = 0.15
 _C.MODEL.HEADS.SCALE = 30
 

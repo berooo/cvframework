@@ -333,7 +333,7 @@ class ResNet(nn.Module):
     layers : list of int
         Numbers of layers in each block
     classes : int, default 1000
-        Number of classification classes.
+        Number of base classes.
     dilated : bool, default False
         Applying dilation strategy to pretrained ResNet yielding a stride-8 model,
         typically used in Semantic Segmentation.
@@ -522,7 +522,7 @@ class ResNet_sw(nn.Module):
     layers : list of int
         Numbers of layers in each block
     classes : int, default 1000
-        Number of classification classes.
+        Number of base classes.
     dilated : bool, default False
         Applying dilation strategy to pretrained ResNet yielding a stride-8 model,
         typically used in Semantic Segmentation.

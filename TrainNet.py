@@ -380,7 +380,7 @@ def train(train_config,model_config):
         [transforms.ToTensor(),  # 函数接受PIL Image或numpy.ndarray，将其先由HWC转置为CHW格式，再转为float后每个像素除以255.
          transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
-    if params['model_type']=='classification':
+    if params['model_type']=='base':
         trainClassification(params,transform)
     elif params['model_type']=='siamese':
         trainSiamese(params,transform)

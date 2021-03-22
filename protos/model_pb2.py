@@ -76,7 +76,7 @@ _MODELCONFIG = _descriptor.Descriptor(
     _descriptor.FieldDescriptor(
       name='modeltype', full_name='bero.protos.ModelConfig.modeltype', index=6,
       number=7, type=9, cpp_type=9, label=1,
-      has_default_value=True, default_value=b"classification".decode('utf-8'),
+      has_default_value=True, default_value=b"base".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),

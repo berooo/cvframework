@@ -66,7 +66,7 @@ class FasterRCNNVGG16(FasterRCNN):
 class VGG16roIHead(nn.Module):
     """Faster R-CNN Head for VGG-16 based implementation.
         This class is used as a head for Faster R-CNN.
-        This outputs class-wise localizations and classification based on feature
+        This outputs class-wise localizations and base based on feature
         maps in the given RoIs.
 
         Args:

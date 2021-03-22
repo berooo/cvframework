@@ -204,7 +204,7 @@ class TripletNet(nn.Module):
 
 def getModel(modelName,num_classes,Gpu,modeltype,cuda_gpu=True,pretrained=True,balanced=False,**kargs):
 
-    if modeltype=='classification':
+    if modeltype=='base':
 
         kargs['num_classes']=num_classes
         kargs['name']=modelName

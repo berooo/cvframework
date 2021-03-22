@@ -24,7 +24,7 @@ parser.add_argument('--data_dir',default='/home/shibaorong/modelTorch/out/holida
                     help='destination where trained network should be saved')
 parser.add_argument('--valdata_dir',default='/home/shibaorong/modelTorch/out/holidaystest.json',
                     help='destination where trained network should be saved')
-parser.add_argument('--train_dir',default='/mnt/sdb/shibaorong/logs/holidays/classification/resnet50_arc/parameter_150.pkl',
+parser.add_argument('--train_dir',default='/mnt/sdb/shibaorong/logs/holidays/base/resnet50_arc/parameter_150.pkl',
                     help='destination where trained network should be saved')
 parser.add_argument('--autoaugment',default=False,
                     help='destination where trained network should be saved')
@@ -94,7 +94,7 @@ def testmodel(args,cuda_gpu,type='extractor',similartype='dot'):
                            transform=mytraindata.transform),
             batch_size=args.batch_size, shuffle=False, num_workers=0, pin_memory=True
         )
-        if type=='classification':
+        if type=='base':
             qoolvecs = torch.zeros(args.classnum, len(gnd)).cuda()
         elif type=='extractor':
             qoolvecs = torch.zeros(OUTPUT_DIM[args.backbone], len(gnd)).cuda()
@@ -114,7 +114,7 @@ def testmodel(args,cuda_gpu,type='extractor',similartype='dot'):
 
         if type=='extractor':
             poolvecs = torch.zeros(OUTPUT_DIM[args.backbone], len(mytrainloader)).cuda()
-        elif type=='classification':
+        elif type=='base':
             poolvecs = torch.zeros(args.classnum, len(mytrainloader)).cuda()
         idlist = []
         train_acc=0
@@ -249,7 +249,7 @@ if __name__=='__main__':
     map,mrr = testmodel(args, cuda_gpu, type='extractor', similartype='dot')
     result[str(1)]['extractor_map'] = map
     result[str(1)]['extractor_mrr']=mrr
-    map,mrr=testmodel(args, cuda_gpu,type='classification',similartype='dot')
+    map,mrr=testmodel(args, cuda_gpu,type='base',similartype='dot')
     result[str(1)]['classification_map']=map
     result[str(1)]['classification_mrr']=mrr
 
