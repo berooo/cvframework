@@ -146,7 +146,6 @@ def trainmultimodal(*params):
 
       fc,fp= mymodel(img1,img2)
 
-
       loss_contra_2 = loss_contrasive(fc, fp, target)
       out1 = Arcloss(fc, label1)
       loss1 = loss_crossentro(out1, label1)

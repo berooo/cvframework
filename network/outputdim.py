@@ -10,6 +10,7 @@ OUTPUT_DIM = {
     'resnet50'              : 2048,
     'resnet101'             : 2048,
     'resnet152'             : 2048,
+
     'densenet121'           : 1024,
     'densenet169'           : 1664,
     'densenet201'           : 1920,

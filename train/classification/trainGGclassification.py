@@ -51,6 +51,7 @@ os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 min_loss = float("inf")
 
+
 def trainclassification(mymodel,epoch,optimizer,thisloss,mytrainloader,scheduler):
     global min_loss
     batch_timer = AverageMeter()

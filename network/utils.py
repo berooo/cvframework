@@ -7,7 +7,7 @@ except ImportError:
 
 import torch
 import torch.nn as nn
-from . import inception,resnet,densenet,dshNet,vgg,resnet_ibn
+from . import inception,resnet,densenet,dshNet,vgg,resnet_ibn,resnest
 from .landmark import GLEM
 
 
@@ -18,6 +18,8 @@ networks_map = {
     'resnet34':resnet.resnet34,
     'resnet101': resnet.resnet101,
     'resnet152': resnet.resnet152,
+    'resnet200':resnest.resnest200,
+    'resnet269':resnest.resnest269,
     'densenet121':densenet.densenet121,
     'densenet169':densenet.densenet169,
     'densenet161':densenet.densenet161,

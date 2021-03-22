@@ -1,7 +1,6 @@
 import torch
 from torch import nn
 
-
 class TripletLoss(nn.Module):
     """Triplet loss with hard positive/negative mining.
     Reference:
@@ -10,7 +9,6 @@ class TripletLoss(nn.Module):
     Args:
     - margin (float): margin for triplet.
     """
-
     def __init__(self, margin=0.3):
         super(TripletLoss, self).__init__()
         self.margin = margin

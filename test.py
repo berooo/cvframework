@@ -1,24 +1,61 @@
+import torch
+from torch.nn import Parameter
+from torch import nn
+from torch.utils.data import Dataset,DataLoader
+import numpy as np
 
-TOP_K = 3
+class model(nn.Module):
+    def __init__(self):
+        super(model,self).__init__()
+        self.W=Parameter(torch.Tensor([1]))
+        self.b=Parameter(torch.Tensor([1]))
 
-def to_hex(image_id):
-    return '{0:0{1}x}'.format(image_id, 16)
+    def forward(self,x):
+        return self.W*x+self.b
 
-def get_prediction_map(test_ids, train_ids_labels_and_scores):
-    """Makes dict from test ids and ranked training ids, labels, scores."""
+class LRData(Dataset):
+    def __init__(self,x):
 
-    prediction_map = dict()
+        self.x=x
 
-    for test_index, test_id in enumerate(test_ids):
-        hex_test_id = to_hex(test_id)
+        self.y=[3*i+2 for i in x]
 
-        aggregate_scores = {}
-        for _, label, score in train_ids_labels_and_scores[test_index][:TOP_K]:
-            if label not in aggregate_scores:
-                aggregate_scores[label] = 0
-            aggregate_scores[label] += score
+    def __getitem__(self, item):
+        xs=np.asarray(self.x[item])
+        ys=np.asarray(self.y[item])
+        xs=torch.from_numpy(xs)
+        ys=torch.from_numpy(ys)
+        return xs,ys
 
-        label, score = max(aggregate_scores.items(), key=operator.itemgetter(1))
-        prediction_map[hex_test_id] = {'score': score, 'class': label}
+    def __len__(self):
+        return len(self.x)
 
-    return prediction_map
+def setup_model():
+    my=model()
+    return my
+
+def train(my,dataloader,maxepoch,loss_func,optimizer):
+
+    for i in range(maxepoch):
+        for index,(x,y) in enumerate(dataloader):
+            x=x.float()
+            ry=my(x)
+            y=y.float()
+            optimizer.zero_grad()
+            loss=loss_func(ry,y)
+            print(loss)
+            loss.backward()
+            optimizer.step()
+
+
+if __name__=='__main__':
+    my=setup_model()
+    maxepoch=100
+    x=[i for i in range(1000)]
+    loss_func=torch.nn.MSELoss()
+    dataset=LRData(x)
+    dataloader=DataLoader(dataset,batch_size=1,shuffle=True)
+    optimizer=torch.optim.Adam(my.parameters())
+    train(my,dataloader,maxepoch,loss_func,optimizer)
+    print(my.W)
+    print(my.b)
